@@ -1,0 +1,1022 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M231 — Guide TP Cryptographie Appliquée</title>
+<style>
+  :root {
+    --teal:    #005F73;
+    --teal-l:  #0a7a93;
+    --navy:    #1B2A4A;
+    --amber:   #92610A;
+    --bg-warn: #FFF8E1;
+    --bg-ok:   #E8F5E9;
+    --bg-code: #1e2535;
+    --code-fg: #e2e8f0;
+    --red:     #C0392B;
+    --green:   #1A5C2A;
+    --grey:    #555;
+    --border:  #dde3ea;
+    --sidebar-w: 270px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 15px; color: #1a1a2e; background: #f5f7fa; }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+    color: #fff; padding: 20px 32px; position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  }
+  header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: .3px; }
+  header p  { font-size: .82rem; opacity: .85; margin-top: 3px; }
+  .header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); border-radius: 20px; padding: 3px 10px; font-size: .78rem; white-space: nowrap; }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; min-height: calc(100vh - 70px); }
+
+  /* ── SIDEBAR ── */
+  nav#sidebar {
+    width: var(--sidebar-w); min-width: var(--sidebar-w);
+    background: #fff; border-right: 1px solid var(--border);
+    position: sticky; top: 70px; height: calc(100vh - 70px);
+    overflow-y: auto; padding: 16px 0;
+  }
+  nav#sidebar .nav-section { font-size: .72rem; font-weight: 700; color: var(--grey); letter-spacing: 1px; text-transform: uppercase; padding: 10px 18px 4px; }
+  nav#sidebar a {
+    display: block; padding: 7px 18px 7px 24px; color: #333; text-decoration: none;
+    font-size: .88rem; border-left: 3px solid transparent; transition: all .15s;
+  }
+  nav#sidebar a:hover  { background: #f0f4f8; color: var(--teal); }
+  nav#sidebar a.active { background: #e8f4f8; color: var(--teal); border-left-color: var(--teal); font-weight: 600; }
+  nav#sidebar a.sub    { padding-left: 36px; font-size: .83rem; color: #555; }
+  nav#sidebar a.sub:hover { color: var(--teal); }
+
+  /* ── MAIN ── */
+  main { flex: 1; padding: 32px 36px; max-width: 920px; }
+
+  /* ── SECTIONS ── */
+  section { margin-bottom: 48px; scroll-margin-top: 90px; }
+  section.tp-block { background: #fff; border-radius: 10px; border: 1px solid var(--border); padding: 28px 32px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+
+  /* ── HEADINGS ── */
+  h2.tp-title {
+    font-size: 1.3rem; font-weight: 700; color: #fff;
+    background: linear-gradient(90deg, var(--navy), var(--teal));
+    padding: 12px 20px; border-radius: 8px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  h2.tp-title .tp-num { background: rgba(255,255,255,.25); border-radius: 6px; padding: 2px 10px; font-size: .9rem; }
+  h2.section-title { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin: 24px 0 10px; padding-left: 10px; border-left: 4px solid var(--teal); }
+  h3.step-title {
+    font-size: .95rem; font-weight: 700; color: var(--teal);
+    margin: 20px 0 8px; display: flex; align-items: center; gap: 8px;
+  }
+  h3.step-title .step-badge {
+    background: var(--teal); color: #fff; border-radius: 50%;
+    width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+    font-size: .78rem; flex-shrink: 0;
+  }
+
+  /* ── META BAR ── */
+  .tp-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tp-meta span { background: #f0f4f8; border-radius: 20px; padding: 3px 12px; font-size: .82rem; color: var(--navy); }
+  .tp-meta .dur { background: #e3f2fd; }
+  .tp-meta .pre { background: #fce4ec; }
+
+  /* ── CODE BLOCKS ── */
+  .code-wrap { position: relative; margin: 10px 0 16px; border-radius: 8px; overflow: hidden; }
+  .code-wrap pre {
+    background: var(--bg-code); color: var(--code-fg);
+    font-family: 'Consolas', 'Courier New', monospace; font-size: .83rem;
+    line-height: 1.6; padding: 16px 20px; overflow-x: auto; white-space: pre;
+  }
+  .code-wrap .copy-btn {
+    position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,.12);
+    color: #ccc; border: 1px solid rgba(255,255,255,.2); border-radius: 5px;
+    padding: 3px 10px; font-size: .75rem; cursor: pointer; transition: all .15s;
+  }
+  .code-wrap .copy-btn:hover { background: rgba(255,255,255,.25); color: #fff; }
+  .code-wrap .copy-btn.copied { background: #1A5C2A; color: #fff; border-color: #1A5C2A; }
+
+  /* ── COMMENT LINES (gris dans le code) ── */
+  .code-wrap pre .comment { color: #8899aa; }
+  .code-wrap pre .kw      { color: #93c5fd; }
+  .code-wrap pre .str     { color: #86efac; }
+  .code-wrap pre .fn      { color: #fde68a; }
+
+  /* ── RESULT BOX ── */
+  .result-box { background: #0f1724; border-left: 4px solid var(--teal); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 10px 0 16px; }
+  .result-box .result-label { font-size: .78rem; color: var(--teal); font-weight: 700; margin-bottom: 8px; letter-spacing: .5px; }
+  .result-box pre { background: none; color: #94d2a8; font-family: 'Consolas', monospace; font-size: .82rem; line-height: 1.5; white-space: pre-wrap; }
+
+  /* ── NOTES & WARNINGS ── */
+  .note, .warn, .ok-box, .info-box {
+    border-radius: 8px; padding: 12px 16px; margin: 12px 0; font-size: .88rem;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .note  { background: var(--bg-warn); border-left: 4px solid #F9A825; color: var(--amber); }
+  .warn  { background: #fce4ec; border-left: 4px solid var(--red); color: var(--red); }
+  .ok-box{ background: var(--bg-ok);  border-left: 4px solid var(--green); color: var(--green); }
+  .info-box { background: #e3f2fd; border-left: 4px solid #1565C0; color: #1565C0; }
+  .note .ico, .warn .ico, .ok-box .ico, .info-box .ico { font-size: 1.1rem; flex-shrink: 0; }
+
+  /* ── KEY POINT ── */
+  .key-point { background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 14px 18px; margin: 12px 0; font-size: .88rem; }
+  .key-point strong { color: var(--amber); }
+
+  /* ── TABLE ── */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .86rem; }
+  th { background: var(--navy); color: #fff; padding: 9px 12px; text-align: left; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  tr:hover td { background: #f0f4f8; }
+
+  /* ── GRILLE EVAL ── */
+  .eval-table th { background: var(--teal); }
+  .eval-total td { background: #e8f4f8 !important; font-weight: 700; }
+
+  /* ── PREREQ GRID ── */
+  .prereq-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .prereq-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .prereq-card .tp-label { font-size: .78rem; font-weight: 700; color: var(--teal); margin-bottom: 6px; }
+  .prereq-card ul { padding-left: 16px; font-size: .84rem; color: #333; }
+  .prereq-card ul li { margin-bottom: 3px; }
+
+  /* ── PROGRESS BAR ── */
+  .tp-progress { display: flex; gap: 6px; margin-bottom: 20px; }
+  .tp-progress .dot {
+    flex: 1; height: 5px; border-radius: 3px; background: #dde3ea; cursor: pointer;
+    transition: background .2s;
+  }
+  .tp-progress .dot.done { background: var(--teal); }
+  .tp-progress .dot:hover { background: var(--teal-l); }
+
+  /* ── CHAIN DIAGRAM ── */
+  .chain { display: flex; align-items: center; gap: 0; margin: 14px 0; flex-wrap: wrap; }
+  .chain-box { background: var(--navy); color: #fff; border-radius: 8px; padding: 10px 16px; font-size: .82rem; text-align: center; min-width: 110px; }
+  .chain-box.root   { background: var(--teal); }
+  .chain-box.inter  { background: var(--navy); }
+  .chain-box.server { background: #2d6a4f; }
+  .chain-arr { font-size: 1.3rem; color: var(--grey); padding: 0 6px; }
+
+  /* ── FOOTER ── */
+  footer { text-align: center; padding: 20px; color: var(--grey); font-size: .82rem; border-top: 1px solid var(--border); background: #fff; margin-top: 40px; }
+
+  /* ── MOBILE ── */
+  #menu-toggle { display: none; background: rgba(255,255,255,.18); border: none; color: #fff; font-size: 1.3rem; cursor: pointer; border-radius: 6px; padding: 4px 10px; }
+  @media (max-width: 768px) {
+    #menu-toggle { display: block; }
+    nav#sidebar { position: fixed; top: 0; left: -280px; height: 100vh; z-index: 200; transition: left .25s; box-shadow: 2px 0 12px rgba(0,0,0,.2); }
+    nav#sidebar.open { left: 0; }
+    main { padding: 20px 16px; }
+    h2.tp-title { font-size: 1.1rem; }
+    .prereq-grid { grid-template-columns: 1fr; }
+  }
+  /* Overlay mobile */
+  #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 199; }
+  #overlay.show { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div>
+      <h1>M231 — Guide TP : Cryptographie Appliquée</h1>
+      <p>MST IRISTI / MST SICRAT &nbsp;|&nbsp; FST Settat — Université Hassan 1er &nbsp;|&nbsp; Pr. A. HAJAMI &nbsp;|&nbsp; 2026–2027</p>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="badge">5 TPs &nbsp;·&nbsp; 2h</span>
+      <button id="menu-toggle" onclick="toggleMenu()">☰</button>
+    </div>
+  </div>
+</header>
+<div id="overlay" onclick="toggleMenu()"></div>
+
+<div class="layout">
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<nav id="sidebar">
+  <div class="nav-section">Navigation</div>
+  <a href="#prereqs">⚙️ Prérequis &amp; Installation</a>
+  <a href="#tp11">🔐 TP1.1 — AES-GCM &amp; ChaCha20</a>
+  <a href="#tp11-e1" class="sub">↳ Étape 1 — AES-GCM</a>
+  <a href="#tp11-e2" class="sub">↳ Étape 2 — Exécuter</a>
+  <a href="#tp11-e3" class="sub">↳ Étape 3 — Benchmark</a>
+  <a href="#tp12">🔑 TP1.2 — Hachage &amp; Argon2id</a>
+  <a href="#tp12-e1" class="sub">↳ Étape 1 — Rainbow Table</a>
+  <a href="#tp12-e2" class="sub">↳ Étape 2 — Argon2id</a>
+  <a href="#tp13">🏛️ TP1.3 — PKI OpenSSL</a>
+  <a href="#tp13-e1" class="sub">↳ Étape 1 — Arborescence</a>
+  <a href="#tp13-e2" class="sub">↳ Étape 2 — Root CA</a>
+  <a href="#tp13-e3" class="sub">↳ Étape 3 — CA Intermédiaire</a>
+  <a href="#tp13-e4" class="sub">↳ Étape 4 — Certificat serveur</a>
+  <a href="#tp13-e5" class="sub">↳ Étape 5 — Vérification</a>
+  <a href="#tp14">✍️ TP1.4 — Signature Ed25519</a>
+  <a href="#tp14-e1" class="sub">↳ Étape 1 — Génération &amp; signature</a>
+  <a href="#tp14-e2" class="sub">↳ Étape 2 — Exécuter</a>
+  <a href="#tp15">🌐 TP1.5 — TLS &amp; Wireshark</a>
+  <a href="#tp15-e1" class="sub">↳ Étape 1 — SSLKEYLOGFILE</a>
+  <a href="#tp15-e2" class="sub">↳ Étape 2 — Capture Wireshark</a>
+  <a href="#tp15-e3" class="sub">↳ Étape 3 — Configuration déchiffrement</a>
+  <a href="#tp15-e4" class="sub">↳ Étape 4 — Analyse handshake</a>
+  <a href="#tp15-e5" class="sub">↳ Étape 5 — Captures écran</a>
+  <a href="#eval">📋 Grille d'évaluation</a>
+  <a href="#windows">🪟 Annexe Windows</a>
+</nav>
+
+<!-- ═══════ MAIN ═══════ -->
+<main>
+
+<!-- ══ INTRO ══ -->
+<section id="prereqs">
+  <div class="warn"><span class="ico">⚠️</span><div>
+    <strong>Modalités de rendu :</strong><br>
+    • Délai : <strong>La fin de la séance de TP</strong><br>
+    • Format : remplir le formulaire disponible sur : <a href="https://forms.gle/WvQCUPz4QYtDd2eX6" target="_blank" style="color:var(--red);font-weight:700">https://forms.gle/WvQCUPz4QYtDd2eX6</a><br>
+    • Contenu : Réponses aux questions du formulaire + captures d'écran légendées<br>
+    • Travail <strong>INDIVIDUEL</strong> — les similitudes entre comptes rendus seront sanctionnées
+  </div></div>
+
+  <div class="note"><span class="ico">ℹ️</span><div>Cette section est à lire <strong>AVANT la séance de TP</strong>. Choisissez votre situation (A, B ou C) et suivez les instructions. L'installation prend 5 à 10 minutes.</div></div>
+
+  <h2 class="section-title">Outils requis par TP</h2>
+  <table>
+    <tr><th>TP</th><th>Outils Python</th><th>Outils système</th><th>Sans installation</th></tr>
+    <tr><td>TP1.1 — AES-GCM</td><td>cryptography</td><td>—</td><td>Google Colab ✅</td></tr>
+    <tr><td>TP1.2 — Hachage</td><td>cryptography, passlib, argon2-cffi</td><td>—</td><td>Google Colab ✅</td></tr>
+    <tr><td>TP1.3 — PKI</td><td>— (pas de Python)</td><td>OpenSSL 3.x</td><td>❌ OpenSSL requis</td></tr>
+    <tr><td>TP1.4 — Signature</td><td>cryptography</td><td>—</td><td>Google Colab ✅</td></tr>
+    <tr><td>TP1.5 — Wireshark</td><td>— (pas de Python)</td><td>Wireshark, Firefox</td><td>❌ Logiciel local</td></tr>
+  </table>
+
+  <h2 class="section-title">Installation</h2>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># Situation A — Linux (Kali / Ubuntu) — recommandé</span>
+pip install cryptography passlib argon2-cffi
+sudo apt install openssl wireshark -y
+
+<span class="comment"># Situation B — Windows avec WSL</span>
+<span class="comment"># Dans WSL (Ubuntu) :</span>
+pip install cryptography passlib argon2-cffi
+sudo apt install openssl -y
+<span class="comment"># Wireshark : installer la version Windows native depuis wireshark.org</span>
+
+<span class="comment"># Situation C — Google Colab (TP1.1, 1.2, 1.4 uniquement)</span>
+<span class="comment"># !pip install cryptography passlib argon2-cffi</span></pre>
+  </div>
+</section>
+
+<!-- ══ TP1.1 ══ -->
+<section id="tp11" class="tp-block">
+  <h2 class="tp-title"><span class="tp-num">TP1.1</span> Chiffrement AES-256-GCM et ChaCha20-Poly1305</h2>
+  <div class="tp-meta">
+    <span class="dur">⏱ 30 min</span>
+    <span class="pre">📋 Python 3.10+, cryptography</span>
+  </div>
+  <p>Implémenter le chiffrement symétrique AEAD avec les deux algorithmes recommandés, mesurer et comparer leurs performances.</p>
+
+  <!-- Étape 1 -->
+  <h3 class="step-title" id="tp11-e1"><span class="step-badge">1</span> Chiffrement AES-256-GCM — Implémentation de base</h3>
+  <p style="margin-bottom:8px">Créer le fichier <code>aes_gcm.py</code> :</p>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># Créer le fichier</span>
+nano ~/crypto_tp/aes_gcm.py</pre>
+  </div>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># ── Contenu de aes_gcm.py ──────────────────────────────────────────────</span>
+<span class="kw">from</span> cryptography.hazmat.primitives.ciphers.aead <span class="kw">import</span> AESGCM
+<span class="kw">import</span> os, time
+
+<span class="comment"># 1. Génération de la clé AES-256 (32 octets = 256 bits)</span>
+key = AESGCM.generate_key(bit_length=256)
+<span class="fn">print</span>(<span class="str">f"Clé AES-256 (hex) : {key.hex()}"</span>)
+<span class="fn">print</span>(<span class="str">f"Taille clé        : {len(key)*8} bits"</span>)
+
+<span class="comment"># 2. Création de l'objet AESGCM</span>
+aesgcm = AESGCM(key)
+
+<span class="comment"># 3. Nonce unique 96 bits (12 octets) — JAMAIS réutiliser !</span>
+nonce = os.urandom(12)
+<span class="fn">print</span>(<span class="str">f"Nonce (hex)       : {nonce.hex()}"</span>)
+
+<span class="comment"># 4. Message à chiffrer</span>
+plaintext = <span class="str">b"Virement 5000 DH - Compte: MA76000000000000000000"</span>
+aad = <span class="str">b"transaction_id:TXN-2025-001"</span>  <span class="comment"># non chiffré, authentifié</span>
+
+<span class="comment"># 5. Chiffrement</span>
+t0 = time.perf_counter()
+ciphertext = aesgcm.encrypt(nonce, plaintext, aad)
+t1 = time.perf_counter()
+<span class="fn">print</span>(<span class="str">f"\nMessage clair     : {plaintext}"</span>)
+<span class="fn">print</span>(<span class="str">f"Message chiffré   : {ciphertext.hex()}"</span>)
+<span class="fn">print</span>(<span class="str">f"Taille chiffré    : {len(ciphertext)} octets (= {len(plaintext)}+16 tag)"</span>)
+<span class="fn">print</span>(<span class="str">f"Temps chiffrement : {(t1-t0)*1e6:.2f} µs"</span>)
+
+<span class="comment"># 6. Déchiffrement</span>
+recovered = aesgcm.decrypt(nonce, ciphertext, aad)
+<span class="fn">print</span>(<span class="str">f"\nMessage récupéré  : {recovered}"</span>)
+<span class="fn">print</span>(<span class="str">f"Intégrité         : {'✅ OK' if recovered == plaintext else '❌ ERREUR'}"</span>)
+
+<span class="comment"># 7. Test de détection d'altération</span>
+<span class="fn">print</span>(<span class="str">"\n--- Test altération du message chiffré ---"</span>)
+tampered = bytearray(ciphertext)
+tampered[5] ^= 0xFF
+<span class="kw">try</span>:
+    aesgcm.decrypt(nonce, bytes(tampered), aad)
+    <span class="fn">print</span>(<span class="str">"❌ ERREUR : altération non détectée !"</span>)
+<span class="kw">except</span> Exception <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="str">f"✅ Altération détectée : {type(e).__name__}"</span>)</pre>
+  </div>
+
+  <!-- Étape 2 -->
+  <h3 class="step-title" id="tp11-e2"><span class="step-badge">2</span> Exécuter et analyser les résultats</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>python3 ~/crypto_tp/aes_gcm.py</pre>
+  </div>
+  <div class="result-box">
+    <div class="result-label">📤 RÉSULTAT ATTENDU</div>
+    <pre>Clé AES-256 (hex) : a3f8b2c1... (64 caractères hexadécimaux)
+Taille clé        : 256 bits
+Nonce (hex)       : 9d4e2a... (24 caractères hexadécimaux)
+Message clair     : b'Virement 5000 DH - Compte: MA76000000000000000000'
+Message chiffré   : 7c4f9a... (hex)
+Taille chiffré    : 63 octets (= 47 + 16 tag GCM)
+Temps chiffrement : ~2-5 µs
+Message récupéré  : b'Virement 5000 DH - Compte: MA76000000000000000000'
+Intégrité         : ✅ OK
+--- Test altération du message chiffré ---
+✅ Altération détectée : InvalidTag</pre>
+  </div>
+  <div class="key-point">🔑 <strong>Point clé :</strong> les 16 derniers octets du message chiffré sont le <strong>TAG d'authentification GCM</strong>. Il garantit que toute modification du chiffré (même d'un seul bit) sera détectée. C'est pourquoi AES-GCM est dit <strong>AEAD</strong> (Authenticated Encryption with Associated Data).</div>
+
+  <!-- Étape 3 -->
+  <h3 class="step-title" id="tp11-e3"><span class="step-badge">3</span> Benchmark AES-GCM vs ChaCha20 sur un fichier de 10 Mo</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>nano ~/crypto_tp/bench.py</pre>
+  </div>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># ── Contenu de bench.py ─────────────────────────────────────────────────</span>
+<span class="kw">from</span> cryptography.hazmat.primitives.ciphers.aead <span class="kw">import</span> AESGCM, ChaCha20Poly1305
+<span class="kw">import</span> os, time
+
+SIZE_MB = 10
+data = os.urandom(SIZE_MB * 1024 * 1024)
+
+<span class="kw">def</span> <span class="fn">bench</span>(algo_class, bit_length, name):
+    <span class="kw">if</span> algo_class.__name__ == <span class="str">"ChaCha20Poly1305"</span>:
+        key = algo_class.generate_key()          <span class="comment"># taille fixe 256 bits</span>
+    <span class="kw">else</span>:
+        key = algo_class.generate_key(bit_length=bit_length)
+    algo  = algo_class(key)
+    nonce = os.urandom(12)
+    t0 = time.perf_counter()
+    ct = algo.encrypt(nonce, data, None)
+    t1 = time.perf_counter()
+    t2 = time.perf_counter()
+    algo.decrypt(nonce, ct, None)
+    t3 = time.perf_counter()
+    enc_speed = SIZE_MB / (t1 - t0)
+    dec_speed = SIZE_MB / (t3 - t2)
+    <span class="fn">print</span>(<span class="str">f"{name:30s} | Chiffrement: {enc_speed:6.1f} Mo/s | Déchiffrement: {dec_speed:6.1f} Mo/s"</span>)
+
+<span class="fn">print</span>(<span class="str">f"{'Algorithme':30s} | {'Chiffrement':20s} | Déchiffrement"</span>)
+<span class="fn">print</span>(<span class="str">"-"</span> * 75)
+bench(AESGCM,           256, <span class="str">"AES-256-GCM"</span>)
+bench(ChaCha20Poly1305, 256, <span class="str">"ChaCha20-Poly1305"</span>)</pre>
+  </div>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>python3 ~/crypto_tp/bench.py</pre>
+  </div>
+  <div class="result-box">
+    <div class="result-label">📤 RÉSULTAT TYPIQUE</div>
+    <pre>PC Intel (avec AES-NI) :
+AES-256-GCM        | Chiffrement:  850.3 Mo/s | Déchiffrement:  820.5 Mo/s
+ChaCha20-Poly1305  | Chiffrement:  450.2 Mo/s | Déchiffrement:  445.1 Mo/s
+
+Raspberry Pi / ARM (sans AES-NI) :
+AES-256-GCM        | Chiffrement:   85.0 Mo/s | Déchiffrement:   83.0 Mo/s
+ChaCha20-Poly1305  | Chiffrement:  210.0 Mo/s | Déchiffrement:  208.0 Mo/s
+→ Sur ARM, ChaCha20 est 2.5× plus rapide qu'AES-GCM !</pre>
+  </div>
+</section>
+
+<!-- ══ TP1.2 ══ -->
+<section id="tp12" class="tp-block">
+  <h2 class="tp-title"><span class="tp-num">TP1.2</span> Hachage et Stockage Sécurisé des Mots de Passe</h2>
+  <div class="tp-meta">
+    <span class="dur">⏱ 20 min</span>
+    <span class="pre">📋 Python 3.10+, hashlib, passlib, argon2-cffi</span>
+  </div>
+
+  <h3 class="step-title" id="tp12-e1"><span class="step-badge">1</span> Démonstration de l'insécurité de SHA-256 brut — Rainbow Table</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>nano ~/crypto_tp/hash_demo.py</pre>
+  </div>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># ── Contenu de hash_demo.py ──────────────────────────────────────────────</span>
+<span class="kw">import</span> hashlib, time
+
+<span class="comment"># Base de données vulnérable (SHA-256 brut sans sel)</span>
+user_db_insecure = {
+    <span class="str">'alice'</span>: hashlib.sha256(<span class="str">b'password123'</span>).hexdigest(),
+    <span class="str">'bob'</span>:   hashlib.sha256(<span class="str">b'azerty'</span>).hexdigest(),
+    <span class="str">'carol'</span>: hashlib.sha256(<span class="str">b'letmein'</span>).hexdigest(),
+}
+<span class="fn">print</span>(<span class="str">"=== Base vulnérable (SHA-256 sans sel) ==="</span>)
+<span class="kw">for</span> user, h <span class="kw">in</span> user_db_insecure.items():
+    <span class="fn">print</span>(<span class="str">f"  {user}: {h[:32]}..."</span>)
+
+<span class="comment"># Attaque par dictionnaire (simulation rainbow table)</span>
+wordlist = [<span class="str">'password'</span>, <span class="str">'password123'</span>, <span class="str">'123456'</span>, <span class="str">'azerty'</span>, <span class="str">'letmein'</span>,
+            <span class="str">'qwerty'</span>, <span class="str">'admin'</span>, <span class="str">'motdepasse'</span>, <span class="str">'soleil'</span>, <span class="str">'football'</span>]
+<span class="fn">print</span>(<span class="str">"\n=== Attaque dictionnaire (rainbow table) ==="</span>)
+cracked = 0
+t0 = time.perf_counter()
+<span class="kw">for</span> word <span class="kw">in</span> wordlist:
+    h = hashlib.sha256(word.encode()).hexdigest()
+    <span class="kw">for</span> user, stored_hash <span class="kw">in</span> user_db_insecure.items():
+        <span class="kw">if</span> h == stored_hash:
+            <span class="fn">print</span>(<span class="str">f"  ✅ CRACKÉ : {user} → '{word}'"</span>)
+            cracked += 1
+t1 = time.perf_counter()
+<span class="fn">print</span>(<span class="str">f"Résultat : {cracked}/3 comptes crackés en {(t1-t0)*1000:.2f} ms"</span>)</pre>
+  </div>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>python3 ~/crypto_tp/hash_demo.py</pre>
+  </div>
+  <div class="result-box">
+    <div class="result-label">📤 RÉSULTAT ATTENDU</div>
+    <pre>=== Attaque dictionnaire (rainbow table) ===
+  ✅ CRACKÉ : alice → 'password123'
+  ✅ CRACKÉ : bob   → 'azerty'
+  ✅ CRACKÉ : carol → 'letmein'
+Résultat : 3/3 comptes crackés en 0.12 ms</pre>
+  </div>
+  <div class="warn"><span class="ico">❌</span><div>3 comptes crackés en <strong>moins d'une milliseconde</strong> avec seulement 10 mots !</div></div>
+
+  <h3 class="step-title" id="tp12-e2"><span class="step-badge">2</span> Stockage sécurisé avec Argon2id — la solution correcte</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>nano ~/crypto_tp/argon2_demo.py</pre>
+  </div>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># ── Contenu de argon2_demo.py ────────────────────────────────────────────</span>
+<span class="kw">from</span> passlib.hash <span class="kw">import</span> argon2
+<span class="kw">import</span> time, hashlib
+
+<span class="comment"># Paramètres Argon2id recommandés (NIST SP 800-63B)</span>
+hasher = argon2.using(memory_cost=65536, time_cost=3, parallelism=4)
+password = <span class="str">'MonSuperMotDePasse2025!'</span>
+
+<span class="fn">print</span>(<span class="str">"=== Hachage Argon2id ==="</span>)
+t0 = time.perf_counter()
+hashed = hasher.hash(password)
+t1 = time.perf_counter()
+<span class="fn">print</span>(<span class="str">f"Hash Argon2id :\n  {hashed}"</span>)
+<span class="fn">print</span>(<span class="str">f"Temps de hachage : {(t1-t0)*1000:.0f} ms  ← intentionnellement LENT"</span>)
+<span class="fn">print</span>(<span class="str">f"Taille du hash   : {len(hashed)} caractères (contient le sel intégré)"</span>)
+
+<span class="fn">print</span>(<span class="str">"\n=== Vérification ==="</span>)
+ok    = argon2.verify(password, hashed)
+wrong = argon2.verify(<span class="str">'mauvais_mdp'</span>, hashed)
+<span class="fn">print</span>(<span class="str">f"Mot de passe correct    : {'✅ Oui' if ok else '❌ Non'}"</span>)
+<span class="fn">print</span>(<span class="str">f"Mauvais mot de passe    : {'✅ Refusé' if not wrong else '❌ Accepté !!!'}"</span>)
+
+<span class="fn">print</span>(<span class="str">"\n=== Unicité grâce au sel aléatoire ==="</span>)
+h1_val = hasher.hash(password)
+h2_val = hasher.hash(password)
+<span class="fn">print</span>(<span class="str">f"Hash 1 : ...{h1_val[-20:]}"</span>)
+<span class="fn">print</span>(<span class="str">f"Hash 2 : ...{h2_val[-20:]}"</span>)
+<span class="fn">print</span>(<span class="str">f"Identiques ? {'OUI' if h1_val == h2_val else '✅ NON — sel aléatoire différent'}"</span>)
+
+<span class="fn">print</span>(<span class="str">"\n=== Comparaison des temps (attaque brute force) ==="</span>)
+t0 = time.perf_counter()
+<span class="kw">for</span> _ <span class="kw">in</span> range(100000):
+    hashlib.sha256(<span class="str">b'tentative'</span>).hexdigest()
+t1 = time.perf_counter()
+<span class="fn">print</span>(<span class="str">f"SHA-256 : 100 000 tentatives en {t1-t0:.3f}s → {100000/(t1-t0):.0f} hash/s"</span>)
+t0 = time.perf_counter()
+<span class="kw">for</span> _ <span class="kw">in</span> range(5):
+    hasher.hash(<span class="str">'tentative'</span>)
+t1 = time.perf_counter()
+argon_rate = 5/(t1-t0)
+<span class="fn">print</span>(<span class="str">f"Argon2id: 5 tentatives en {t1-t0:.3f}s → {argon_rate:.1f} hash/s"</span>)
+<span class="fn">print</span>(<span class="str">f"Argon2id est {int(100000/(t1-t0)/argon_rate)}× plus difficile à brute-forcer"</span>)</pre>
+  </div>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>python3 ~/crypto_tp/argon2_demo.py</pre>
+  </div>
+  <div class="result-box">
+    <div class="result-label">📤 RÉSULTAT ATTENDU</div>
+    <pre>Temps de hachage : ~350 ms  ← intentionnellement LENT
+SHA-256 : 100 000 tentatives en 0.045s → 2 200 000 hash/s
+Argon2id: 5 tentatives en 1.750s → 2.9 hash/s
+Argon2id est ~760 000× plus difficile à brute-forcer que SHA-256</pre>
+  </div>
+</section>
+
+<!-- ══ TP1.3 ══ -->
+<section id="tp13" class="tp-block">
+  <h2 class="tp-title"><span class="tp-num">TP1.3</span> Génération d'une PKI locale avec OpenSSL</h2>
+  <div class="tp-meta">
+    <span class="dur">⏱ 30 min</span>
+    <span class="pre">📋 OpenSSL 3.x, terminal Linux</span>
+  </div>
+  <p>Construire une chaîne de confiance complète — Root CA → CA Intermédiaire → Certificat serveur — en reproduisant ce que font les grandes CAs comme Let's Encrypt.</p>
+
+  <div class="chain" style="margin:16px 0">
+    <div class="chain-box root">🏛️ Root CA<br><small>autosignée</small></div>
+    <div class="chain-arr">→ signe</div>
+    <div class="chain-box inter">🔗 CA Intermédiaire<br><small>signée par Root</small></div>
+    <div class="chain-arr">→ signe</div>
+    <div class="chain-box server">🌐 Certificat Serveur<br><small>www.fst-settat.ma</small></div>
+  </div>
+
+  <div class="info-box"><span class="ico">ℹ️</span><div>Toutes les commandes ci-dessous sont à exécuter dans le terminal. Créer d'abord l'arborescence de travail.</div></div>
+
+  <h3 class="step-title" id="tp13-e1"><span class="step-badge">1</span> Créer l'arborescence PKI</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>mkdir -p ~/crypto_tp/pki/{root-ca,intermediate-ca,certs,csr,private}
+cd ~/crypto_tp/pki
+touch root-ca/index.txt intermediate-ca/index.txt
+echo '1000' > root-ca/serial
+echo '2000' > intermediate-ca/serial
+chmod 700 private/
+echo "Arborescence PKI créée"</pre>
+  </div>
+
+  <h3 class="step-title" id="tp13-e2"><span class="step-badge">2</span> Générer la Root CA (autosignée)</h3>
+  <p style="margin-bottom:8px">La Root CA est le sommet de la hiérarchie. Sa clé privée ne sort jamais et son certificat est autosigné.</p>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># 2a. Clé privée Root CA (ECDSA P-384 — haute sécurité)</span>
+openssl ecparam -name secp384r1 -genkey -noout -out private/rootca.key.pem
+chmod 400 private/rootca.key.pem
+echo "✅ Clé privée Root CA générée"
+
+<span class="comment"># 2b. Certificat Root CA autosigné (valide 10 ans)</span>
+openssl req -new -x509 -days 3650 \
+  -key private/rootca.key.pem \
+  -out root-ca/rootca.cert.pem \
+  -subj "/C=MA/ST=Casablanca/O=FST Settat Root CA/CN=FST Root CA"
+echo "✅ Certificat Root CA créé (valide 10 ans)"
+
+<span class="comment"># 2c. Vérifier le certificat Root CA</span>
+openssl x509 -noout -text -in root-ca/rootca.cert.pem | head -30</pre>
+  </div>
+  <div class="ok-box"><span class="ico">✅</span><div>Champs à vérifier : <code>Issuer = Subject</code> (autosigné), <code>CA:TRUE</code>, <code>Curve: secp384r1</code></div></div>
+
+  <h3 class="step-title" id="tp13-e3"><span class="step-badge">3</span> Générer la CA Intermédiaire</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># 3a. Clé privée CA Intermédiaire (ECDSA P-256)</span>
+openssl ecparam -name prime256v1 -genkey -noout -out private/intermediate.key.pem
+chmod 400 private/intermediate.key.pem
+
+<span class="comment"># 3b. CSR (Certificate Signing Request)</span>
+openssl req -new \
+  -key private/intermediate.key.pem \
+  -out csr/intermediate.csr.pem \
+  -subj "/C=MA/ST=Casablanca/O=FST Settat/CN=FST Intermediate CA"
+
+<span class="comment"># 3c. Signer avec la Root CA (valide 5 ans, extension CA:TRUE)</span>
+openssl x509 -req -days 1825 \
+  -in csr/intermediate.csr.pem \
+  -CA root-ca/rootca.cert.pem \
+  -CAkey private/rootca.key.pem \
+  -CAcreateserial \
+  -out intermediate-ca/intermediate.cert.pem \
+  -extfile &lt;(echo "[v3_ca]\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid,issuer\nbasicConstraints=critical,CA:TRUE,pathlen:0\nkeyUsage=critical,keyCertSign,cRLSign") \
+  -extensions v3_ca
+echo "✅ CA Intermédiaire signée par Root CA"</pre>
+  </div>
+
+  <h3 class="step-title" id="tp13-e4"><span class="step-badge">4</span> Générer le certificat serveur final</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># 4a. Clé privée du serveur (ECDSA P-256)</span>
+openssl ecparam -name prime256v1 -genkey -noout -out private/www.fst-settat.ma.key.pem
+
+<span class="comment"># 4b. CSR avec SAN (Subject Alternative Names)</span>
+openssl req -new \
+  -key private/www.fst-settat.ma.key.pem \
+  -out csr/www.fst-settat.ma.csr.pem \
+  -subj "/C=MA/ST=Casablanca/O=FST Settat/CN=www.fst-settat.ma"
+
+<span class="comment"># 4c. Signer avec la CA intermédiaire (90 jours — comme Let's Encrypt)</span>
+openssl x509 -req -days 90 \
+  -in csr/www.fst-settat.ma.csr.pem \
+  -CA intermediate-ca/intermediate.cert.pem \
+  -CAkey private/intermediate.key.pem \
+  -CAcreateserial \
+  -out certs/www.fst-settat.ma.cert.pem \
+  -extfile &lt;(printf "[v3_end]\nsubjectAltName=DNS:www.fst-settat.ma,DNS:fst-settat.ma\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth\nbasicConstraints=CA:FALSE") \
+  -extensions v3_end
+echo "✅ Certificat serveur créé (valide 90 jours)"</pre>
+  </div>
+
+  <h3 class="step-title" id="tp13-e5"><span class="step-badge">5</span> Vérifier et valider toute la chaîne</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># Afficher les sujets et émetteurs</span>
+echo "=== Root CA ==="
+openssl x509 -noout -subject -issuer -dates -in root-ca/rootca.cert.pem
+echo "=== CA Intermédiaire ==="
+openssl x509 -noout -subject -issuer -dates -in intermediate-ca/intermediate.cert.pem
+echo "=== Certificat Serveur ==="
+openssl x509 -noout -subject -issuer -dates -ext subjectAltName -in certs/www.fst-settat.ma.cert.pem
+
+<span class="comment"># Vérifier la chaîne de confiance complète</span>
+echo "=== Vérification chaîne complète ==="
+openssl verify \
+  -CAfile root-ca/rootca.cert.pem \
+  -untrusted intermediate-ca/intermediate.cert.pem \
+  certs/www.fst-settat.ma.cert.pem</pre>
+  </div>
+  <div class="result-box">
+    <div class="result-label">📤 RÉSULTAT ATTENDU</div>
+    <pre>subject=C=MA, O=FST Settat Root CA, CN=FST Root CA
+issuer=C=MA,  O=FST Settat Root CA, CN=FST Root CA  ← autosigné
+---
+subject=C=MA, O=FST Settat, CN=FST Intermediate CA
+issuer=C=MA,  O=FST Settat Root CA, CN=FST Root CA  ← signée par Root CA
+---
+subject=C=MA, O=FST Settat, CN=www.fst-settat.ma
+issuer=C=MA,  O=FST Settat, CN=FST Intermediate CA  ← signée par Intermediate CA
+X509v3 Subject Alternative Name: DNS:www.fst-settat.ma, DNS:fst-settat.ma
+---
+certs/www.fst-settat.ma.cert.pem: OK  ← Chaîne valide !</pre>
+  </div>
+</section>
+
+<!-- ══ TP1.4 ══ -->
+<section id="tp14" class="tp-block">
+  <h2 class="tp-title"><span class="tp-num">TP1.4</span> Signature Numérique Ed25519 en Python</h2>
+  <div class="tp-meta">
+    <span class="dur">⏱ 15 min</span>
+    <span class="pre">📋 Python 3.10+, cryptography</span>
+  </div>
+
+  <h3 class="step-title" id="tp14-e1"><span class="step-badge">1</span> Génération de clés Ed25519 et signature</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>nano ~/crypto_tp/signature_ed25519.py</pre>
+  </div>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># ── Contenu de signature_ed25519.py ──────────────────────────────────────</span>
+<span class="kw">from</span> cryptography.hazmat.primitives.asymmetric.ed25519 <span class="kw">import</span> Ed25519PrivateKey
+<span class="kw">from</span> cryptography.hazmat.primitives.serialization <span class="kw">import</span> (
+    Encoding, PublicFormat, PrivateFormat, NoEncryption
+)
+
+<span class="comment"># 1. Génération de la paire de clés Ed25519</span>
+private_key = Ed25519PrivateKey.generate()
+public_key  = private_key.public_key()
+priv_bytes = private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
+pub_bytes  = public_key.public_bytes(Encoding.PEM, PublicFormat.SubjectPublicKeyInfo)
+<span class="fn">print</span>(<span class="str">"=== Paire de clés Ed25519 générée ==="</span>)
+<span class="fn">print</span>(<span class="str">f"Clé PUBLIQUE (à distribuer) :\n{pub_bytes.decode()}"</span>)
+
+<span class="comment"># 2. Document à signer</span>
+document = <span class="str">b"""ORDRE DE VIREMENT
+Emetteur     : Alice Alami
+Beneficiaire : FST Settat
+Montant      : 2500.00 DH
+Date         : 2025-09-06
+Reference    : ORD-2025-001"""</span>
+
+<span class="comment"># 3. Signature avec la clé privée</span>
+signature = private_key.sign(document)
+<span class="fn">print</span>(<span class="str">f"Taille signature : {len(signature)} octets (Ed25519 = toujours 64 octets)"</span>)
+<span class="fn">print</span>(<span class="str">f"Signature (hex)  : {signature.hex()[:64]}..."</span>)
+
+<span class="comment"># 4. Vérification — cas normal</span>
+<span class="fn">print</span>(<span class="str">"\n=== Vérification de la signature ==="</span>)
+<span class="kw">try</span>:
+    public_key.verify(signature, document)
+    <span class="fn">print</span>(<span class="str">"✅ Signature VALIDE — document authentique et intègre"</span>)
+<span class="kw">except</span> Exception <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="str">f"❌ Signature invalide : {e}"</span>)
+
+<span class="comment"># 5. Test altération du document</span>
+<span class="fn">print</span>(<span class="str">"\n=== Test d'altération ==="</span>)
+tampered_doc = document.replace(<span class="str">b"2500.00"</span>, <span class="str">b"9999.99"</span>)
+<span class="kw">try</span>:
+    public_key.verify(signature, tampered_doc)
+    <span class="fn">print</span>(<span class="str">"❌ ERREUR CRITIQUE : altération non détectée !"</span>)
+<span class="kw">except</span> Exception:
+    <span class="fn">print</span>(<span class="str">"✅ Altération détectée — signature INVALIDE sur document modifié"</span>)
+
+<span class="comment"># 6. Test avec une fausse clé publique</span>
+<span class="fn">print</span>(<span class="str">"\n=== Test avec une fausse clé publique ==="</span>)
+fake_key = Ed25519PrivateKey.generate().public_key()
+<span class="kw">try</span>:
+    fake_key.verify(signature, document)
+    <span class="fn">print</span>(<span class="str">"❌ ERREUR : fausse clé acceptée !"</span>)
+<span class="kw">except</span> Exception:
+    <span class="fn">print</span>(<span class="str">"✅ Fausse clé rejetée — seule la vraie clé publique peut vérifier"</span>)</pre>
+  </div>
+
+  <h3 class="step-title" id="tp14-e2"><span class="step-badge">2</span> Exécuter</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>python3 ~/crypto_tp/signature_ed25519.py</pre>
+  </div>
+  <div class="result-box">
+    <div class="result-label">📤 RÉSULTAT ATTENDU</div>
+    <pre>✅ Signature VALIDE — document authentique et intègre
+✅ Altération détectée — signature INVALIDE sur document modifié
+✅ Fausse clé rejetée — seule la vraie clé publique peut vérifier</pre>
+  </div>
+</section>
+
+<!-- ══ TP1.5 ══ -->
+<section id="tp15" class="tp-block">
+  <h2 class="tp-title"><span class="tp-num">TP1.5</span> Analyse TLS 1.3 avec Wireshark et SSLKEYLOGFILE</h2>
+  <div class="tp-meta">
+    <span class="dur">⏱ 15 min</span>
+    <span class="pre">📋 Wireshark, Firefox</span>
+  </div>
+
+  <div class="note"><span class="ico">📌</span><div><strong>Remarque :</strong> Si vous rencontrez des problèmes dans les étapes 1, 2 et 3, voir l'<a href="#windows" style="color:var(--amber);font-weight:600">Annexe Windows</a> en bas de page.</div></div>
+
+  <h3 class="step-title" id="tp15-e1"><span class="step-badge">1</span> Exporter les clés TLS avec SSLKEYLOGFILE</h3>
+  <p style="margin-bottom:8px"><strong>Linux / WSL :</strong></p>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># Créer le dossier de travail</span>
+mkdir -p ~/crypto_tp
+
+<span class="comment"># Définir la variable d'environnement et lancer Firefox</span>
+export SSLKEYLOGFILE=~/crypto_tp/tls_keys.log
+firefox &amp;
+
+<span class="comment"># Surveiller le fichier en temps réel</span>
+tail -f ~/crypto_tp/tls_keys.log
+<span class="comment"># Ctrl+C pour arrêter — naviguer sur https://www.google.com d'abord</span></pre>
+  </div>
+  <div class="result-box">
+    <div class="result-label">📤 FORMAT DU FICHIER tls_keys.log</div>
+    <pre>CLIENT_RANDOM [32 octets hex] [96 octets hex master secret]
+CLIENT_HANDSHAKE_TRAFFIC_SECRET [client_random] [secret]
+SERVER_HANDSHAKE_TRAFFIC_SECRET [client_random] [secret]
+→ Ce fichier permet à Wireshark de dériver les clés AES de session</pre>
+  </div>
+  <div class="note"><span class="ico">🪟</span><div><strong>Windows :</strong> voir l'<a href="#windows" style="color:var(--amber)">Annexe Windows</a> pour la procédure avec variable d'environnement système.</div></div>
+
+  <h3 class="step-title" id="tp15-e2"><span class="step-badge">2</span> Capturer le trafic TLS avec Wireshark</h3>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># Lancer Wireshark en capture sur l'interface réseau active</span>
+sudo wireshark &amp;
+
+<span class="comment"># OU capturer en ligne de commande</span>
+sudo tshark -i eth0 -f "tcp port 443" -w ~/crypto_tp/capture_tls.pcap &amp;
+<span class="comment"># Naviguer vers https://example.com dans Firefox, attendre 10s, puis :</span>
+<span class="comment"># kill %1</span></pre>
+  </div>
+
+  <h3 class="step-title" id="tp15-e3"><span class="step-badge">3</span> Configurer Wireshark pour déchiffrer</h3>
+  <p style="margin-bottom:8px">Dans Wireshark : <strong>Edit → Preferences → Protocols → TLS</strong></p>
+  <p style="margin-bottom:8px">Champ <em>(Pre)-Master-Secret log filename</em> → pointer vers :</p>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>~/crypto_tp/tls_keys.log</pre>
+  </div>
+  <div class="result-box">
+    <div class="result-label">📤 RÉSULTAT APRÈS CONFIGURATION</div>
+    <pre>AVANT : Application Data (longueur: 512 octets) — opaque
+APRÈS : HTTP2 GET /index.html  ← contenu en clair visible !
+        Decrypted TLS record
+        HTTP/2 Header frames, DATA frames
+        En-têtes HTTP, corps de la réponse</pre>
+  </div>
+
+  <h3 class="step-title" id="tp15-e4"><span class="step-badge">4</span> Analyser le handshake TLS 1.3 déchiffré</h3>
+
+  <h2 class="section-title">4a — ClientHello</h2>
+  <p>Développer : <code>TLS 1.3 → Handshake Protocol → Client Hello</code></p>
+  <div class="result-box">
+    <div class="result-label">🔍 CHAMPS À RELEVER</div>
+    <pre>Version               : TLS 1.2 (0x0303)  ← valeur legacy
+Supported Versions    : TLS 1.3 (0x0304)  ← réelle version TLS 1.3
+Cipher Suites         : TLS_AES_256_GCM_SHA384
+                        TLS_AES_128_GCM_SHA256
+                        TLS_CHACHA20_POLY1305_SHA256
+Key Share             : curve secp256r1 (P-256) ou x25519
+Server Name (SNI)     : example.com</pre>
+  </div>
+
+  <h2 class="section-title">4b — ServerHello</h2>
+  <div class="result-box">
+    <div class="result-label">🔍 CHAMPS À RELEVER</div>
+    <pre>Cipher Suite retenue  : TLS_AES_256_GCM_SHA384
+Key Share             : clé ECDH du serveur (même courbe que client)
+                        → Pre-master secret = ECDH(client_priv, server_pub)</pre>
+  </div>
+
+  <h2 class="section-title">4c — Certificate (déchiffré)</h2>
+  <div class="result-box">
+    <div class="result-label">🔍 CHAMPS À RELEVER</div>
+    <pre>Subject               : CN = example.com
+Issuer                : CN = DigiCert / Let's Encrypt / ...
+Public Key Algorithm  : id-ecPublicKey (ECDSA) ou rsaEncryption (RSA)
+Signature Algorithm   : ecdsa-with-SHA256 ou sha256WithRSAEncryption
+Subject Alt Names     : DNS:example.com, DNS:www.example.com</pre>
+  </div>
+
+  <h2 class="section-title">4d — RTT du handshake</h2>
+  <div class="result-box">
+    <div class="result-label">📐 CALCUL DU RTT</div>
+    <pre>Paquet 1 (→)  ClientHello          t₁ = 0.000000 s
+Paquet 2 (←)  ServerHello+Cert     t₂ = 0.012345 s
+Paquet 3 (→)  Finished client      t₃ = 0.013100 s
+RTT réseau            = t₂ − t₁  =  12.3 ms
+RTT total handshake   = t₃ − t₁  =  13.1 ms
+TLS 1.2 (2-RTT) ≈ 25–30 ms → TLS 1.3 réduit la latence de ~50 %</pre>
+  </div>
+
+  <h3 class="step-title" id="tp15-e5"><span class="step-badge">5</span> Captures d'écran pour le compte rendu</h3>
+  <table>
+    <tr><th>#</th><th>Capture</th><th>Ce qui doit apparaître</th></tr>
+    <tr><td>1</td><td>Liste des paquets TLS</td><td>Filtre <code>tls</code> — ClientHello, ServerHello, Application Data, IP:port 443</td></tr>
+    <tr><td>2</td><td>Détail ClientHello</td><td>Cipher Suites, extension supported_versions (TLS 1.3), key_share, SNI</td></tr>
+    <tr><td>3</td><td>Données déchiffrées avant/après</td><td>AVANT : opaque / APRÈS : HTTP2 avec méthode, path, authority</td></tr>
+    <tr><td>4</td><td>Certificat X.509 du serveur</td><td>CN, subjectPublicKeyInfo, Validity, SubjectAltName, signatureAlgorithm</td></tr>
+  </table>
+  <div class="warn"><span class="ico">⚠️</span><div>Ce TP démontre pourquoi HTTPS n'est pas inviolable sur votre propre machine : toute application ayant accès à SSLKEYLOGFILE peut déchiffrer tout votre trafic TLS. D'où l'importance des politiques de sécurité endpoint (EDR, contrôle d'accès aux fichiers).</div></div>
+</section>
+
+<!-- ══ GRILLE ══ -->
+<section id="eval" class="tp-block">
+  <h2 class="tp-title">📋 Grille d'évaluation — Compte rendu TP</h2>
+  <table class="eval-table">
+    <tr><th>TP</th><th>Éléments évalués</th><th>Points</th></tr>
+    <tr><td>TP1.1 — AES-GCM</td><td>Sortie Python avec mesures de performance + commentaires sur AES-NI</td><td>4</td></tr>
+    <tr><td>TP1.2 — Hachage</td><td>Sorties hash_demo.py + argon2_demo.py commentées + pourquoi SHA-256 brut est dangereux ?</td><td>4</td></tr>
+    <tr><td>TP1.3 — PKI</td><td>Arborescence PKI + sortie openssl verify = OK + explication chaîne de confiance</td><td>5</td></tr>
+    <tr><td>TP1.4 — Signature</td><td>Sortie Python avec 3 cas testés + que garantit Ed25519 vs un MDP ?</td><td>4</td></tr>
+    <tr><td>TP1.5 — TLS</td><td>4 captures Wireshark + analyse handshake (suites, courbes, RTT)</td><td>5</td></tr>
+    <tr><td>Qualité générale</td><td>Rédaction, organisation, pertinence des commentaires, respect des délais</td><td>3</td></tr>
+    <tr class="eval-total"><td colspan="2"><strong>TOTAL</strong></td><td><strong>25</strong></td></tr>
+  </table>
+  <div class="warn"><span class="ico">⚠️</span><div>
+    <strong>Modalités de rendu :</strong><br>
+    • Délai : <strong>La fin de la séance de TP</strong><br>
+    • Format : remplir le formulaire disponible sur : <a href="https://forms.gle/WvQCUPz4QYtDd2eX6" target="_blank" style="color:var(--red)">https://forms.gle/WvQCUPz4QYtDd2eX6</a><br>
+    • Contenu : Réponses aux questions du formulaire + captures d'écran légendées<br>
+    • Travail <strong>INDIVIDUEL</strong> — les similitudes entre comptes rendus seront sanctionnées
+  </div></div>
+</section>
+
+<!-- ══ ANNEXE WINDOWS ══ -->
+<section id="windows" class="tp-block">
+  <h2 class="tp-title">🪟 Annexe — Adaptation sous Windows</h2>
+  <p style="margin-bottom:16px">Ce guide principal est écrit pour Linux. Voici les adaptations pour Windows (WSL ou PowerShell).</p>
+
+  <h2 class="section-title">TP1.1 — Correction bench.py (TypeError ChaCha20)</h2>
+  <p>Remplacez la ligne 9 :</p>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># AVANT (ligne 9) :</span>
+key = algo_class.generate_key(bit_length=bit_length)
+
+<span class="comment"># APRÈS :</span>
+<span class="kw">if</span> algo_class.__name__ == <span class="str">"ChaCha20Poly1305"</span>:
+    key = algo_class.generate_key()
+<span class="kw">else</span>:
+    key = algo_class.generate_key(bit_length=bit_length)</pre>
+  </div>
+
+  <h2 class="section-title">TP1.2 — Installation passlib</h2>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre>pip install passlib argon2-cffi</pre>
+  </div>
+
+  <h2 class="section-title">TP1.3 — PKI sous Windows</h2>
+  <p style="margin-bottom:8px">La syntaxe <code>{a,b,c}</code> ne fonctionne pas dans PowerShell. Utilisez :</p>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># PowerShell — depuis le dossier pki :</span>
+mkdir root-ca, intermediate-ca, certs, csr, private</pre>
+  </div>
+  <p style="margin:10px 0 6px"><strong>Réinitialiser le mot de passe WSL (si oublié) :</strong></p>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># Dans PowerShell :</span>
+wsl -u root
+<span class="comment"># Dans WSL (en root) :</span>
+passwd abdel    <span class="comment"># remplacer par votre nom d'utilisateur WSL</span>
+exit</pre>
+  </div>
+
+  <h2 class="section-title">TP1.5 — SSLKEYLOGFILE sous Windows</h2>
+  <p style="margin-bottom:8px"><strong>Méthode recommandée — Variable système permanente :</strong></p>
+  <p>Touche Windows → <em>Variables d'environnement</em> → <em>Modifier les variables d'environnement système</em> → <em>Variables d'environnement…</em> → section Variables utilisateur → <strong>Nouvelle</strong> :</p>
+  <table style="margin:10px 0 14px">
+    <tr><th>Champ</th><th>Valeur</th></tr>
+    <tr><td>Nom</td><td><code>SSLKEYLOGFILE</code></td></tr>
+    <tr><td>Valeur</td><td><code>C:\Users\&lt;votre_nom&gt;\crypto_tp\tls_keys.log</code></td></tr>
+  </table>
+  <p style="margin-bottom:8px">Puis <strong>redémarrer Firefox complètement</strong> et vérifier :</p>
+  <div class="code-wrap">
+    <button class="copy-btn" onclick="copyCode(this)">Copier</button>
+    <pre><span class="comment"># PowerShell :</span>
+Get-Content "$env:USERPROFILE\crypto_tp\tls_keys.log"</pre>
+  </div>
+
+  <p style="margin:14px 0 8px"><strong>Méthode complémentaire — about:config Firefox :</strong></p>
+  <p style="margin-bottom:6px">Dans la barre d'adresse Firefox : <code>about:config</code> → rechercher <code>security.tls.keylog_file</code> → créer la préférence (type String) et saisir le chemin.</p>
+  <div class="note"><span class="ico">⚠️</span><div>Sur Firefox 160.0+, le bouton <strong>+</strong> pour créer la préférence peut être absent. Dans ce cas, utilisez uniquement la variable système.</div></div>
+
+  <h2 class="section-title">Tableau récapitulatif Linux → Windows</h2>
+  <table>
+    <tr><th>Commande Linux</th><th>PowerShell</th><th>WSL</th></tr>
+    <tr><td><code>mkdir -p ~/pki/{a,b,c}</code></td><td><code>mkdir a,b,c</code></td><td><code>mkdir -p ~/pki/{a,b,c}</code></td></tr>
+    <tr><td><code>export SSLKEYLOGFILE=~/...</code></td><td>Variable système (GUI)</td><td><code>export SSLKEYLOGFILE=~/...</code></td></tr>
+    <tr><td><code>firefox &amp;</code></td><td>Lancer Firefox Windows</td><td>N/A (pas de GUI)</td></tr>
+    <tr><td><code>tail -f fichier</code></td><td><code>Get-Content fichier -Wait</code></td><td><code>tail -f fichier</code></td></tr>
+    <tr><td><code>chmod 700 dossier</code></td><td>Non nécessaire</td><td><code>chmod 700 dossier</code></td></tr>
+    <tr><td><code>openssl ...</code></td><td><code>openssl ...</code> (si installé)</td><td><code>openssl ...</code> (via WSL)</td></tr>
+  </table>
+</section>
+
+</main>
+</div>
+
+<footer>
+  M231 — Cryptographie Appliquée &nbsp;|&nbsp; Pr. A. HAJAMI &nbsp;|&nbsp; FST Settat — Université Hassan 1er &nbsp;|&nbsp; 2026–2027
+</footer>
+
+<script>
+// ── Navigation active ──────────────────────────────────────────
+const sections = document.querySelectorAll('section[id], h3[id]');
+const navLinks  = document.querySelectorAll('nav#sidebar a');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`nav#sidebar a[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+sections.forEach(s => observer.observe(s));
+
+// ── Copy buttons ──────────────────────────────────────────────
+function copyCode(btn) {
+  const pre = btn.nextElementSibling;
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copié';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── Mobile menu ───────────────────────────────────────────────
+function toggleMenu() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+
+// ── Smooth scroll ─────────────────────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // close mobile menu
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('show');
+    }
+  });
+});
+</script>
+</body>
+</html>
+
+</body></html>
